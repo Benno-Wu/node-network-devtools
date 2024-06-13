@@ -119,4 +119,20 @@ export class MainProcess {
       });
     });
   }
+
+  public sendFile(filePath: string) {
+    this.send({
+      type: "sendFile",
+      data: filePath,
+    });
+  }
 }
+
+let mainProcess: MainProcess | null = null;
+export const getMainProcess = () => {
+  if (!mainProcess) {
+    throw new Error("MainProcess is not initialized");
+  }
+  return mainProcess;
+};
+export const setMainProcess = (process: MainProcess) => (mainProcess = process);

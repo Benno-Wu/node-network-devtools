@@ -10,32 +10,37 @@ export interface CDPCallFrame {
 
 export class RequestDetail {
   id: string;
-  constructor() {
+  type?: "Fetch" | "XHR" | "Script" | "Document" | "Other";
+  constructor(needStack = true) {
     this.id = Math.random().toString(36).slice(2);
+    this.type = "Fetch";
 
-    const frames = initiatorStackPipe(getStackFrames());
+    if (needStack) {
+      const frames = initiatorStackPipe(getStackFrames());
 
-    const callFrames = frames.map((frame) => {
-      const scriptId = Math.random().toString(36).slice(2);
-      const fileName = frame.fileName || "";
-      return {
-        columnNumber: frame.columnNumber || 0,
-        functionName: frame.functionName || "",
-        lineNumber: frame.lineNumber || 0,
-        url: fileName.startsWith("/") ? `file://${fileName}` : fileName,
-        scriptId,
-      };
-    });
+      const callFrames = frames.map((frame) => {
+        const scriptId = Math.random().toString(36).slice(2);
+        const fileName = frame.fileName || "";
+        return {
+          columnNumber: frame.columnNumber || 0,
+          functionName: frame.functionName || "",
+          lineNumber: frame.lineNumber || 0,
+          url: fileName.startsWith("/") ? `file://${fileName}` : fileName,
+          scriptId,
+        };
+      });
 
-    if (callFrames.length > 0) {
-      this.initiator = {
-        type: "script",
-        stack: {
-          callFrames,
-        },
-      };
+      if (callFrames.length > 0) {
+        this.initiator = {
+          type: "script",
+          stack: {
+            callFrames,
+          },
+        };
+      }
     }
   }
+  documentURL?: string;
 
   url?: string;
   method?: string;
@@ -53,7 +58,7 @@ export class RequestDetail {
 
   initiator?: {
     type: string;
-    stack: {
+    stack?: {
       callFrames: CDPCallFrame[];
     };
   };

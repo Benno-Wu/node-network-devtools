@@ -1,7 +1,7 @@
 const http = require("http");
 const https = require("https");
 import { requestProxyFactory } from "./request";
-import { MainProcess } from "./fork";
+import { MainProcess, setMainProcess } from "./fork";
 import { proxyFetch } from "./fetch";
 
 /**
@@ -25,6 +25,7 @@ export async function register(props: RegisterOptions) {
     port,
     serverPort,
   });
+  setMainProcess(mainProcess);
 
   const agents = [http, https];
 

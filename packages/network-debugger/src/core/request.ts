@@ -1,7 +1,7 @@
 import { RequestOptions, IncomingMessage, ClientRequest } from "http";
 import { RequestDetail } from "../common";
 import { MainProcess } from "./fork";
-import { get } from "stack-trace";
+import { loadStackSource } from "./source";
 
 export interface RequestFn {
   (
@@ -79,6 +79,7 @@ export function requestProxyFactory(
     }
 
     const requestDetail = new RequestDetail();
+    loadStackSource(requestDetail)
 
     if (typeof url === "string") {
       requestDetail.url = url;

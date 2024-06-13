@@ -136,7 +136,7 @@ export class DevtoolServer {
     this.timestamp = Date.now() - this.startTime;
 
     const headerPipe = new RequestHeaderPipe(request.requestHeaders);
-    const contentType = headerPipe.getHeader("content-type")
+    const contentType = headerPipe.getHeader("content-type");
 
     return this.send({
       method: "Network.requestWillBeSent",
@@ -161,7 +161,8 @@ export class DevtoolServer {
         timestamp: this.timestamp,
         wallTime: request.requestStartTime,
         initiator: request.initiator,
-        type: "Fetch",
+        type: request.type,
+        documentURL: request.documentURL,
       },
     });
   }
@@ -170,7 +171,8 @@ export class DevtoolServer {
     this.updateTimestamp();
     const headers = new RequestHeaderPipe(request.responseHeaders);
 
-    const contentType = headers.getHeader("content-type") || "text/plain; charset=utf-8";
+    const contentType =
+      headers.getHeader("content-type") || "text/plain; charset=utf-8";
 
     const type = (() => {
       if (/image/.test(contentType)) {

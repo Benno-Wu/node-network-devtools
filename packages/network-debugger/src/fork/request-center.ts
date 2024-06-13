@@ -4,6 +4,7 @@ import type { IncomingMessage } from "http";
 import zlib from "zlib";
 import { Server } from "ws";
 import { RequestHeaderPipe, BodyTransformer } from "./pipe";
+import fs from "fs";
 
 export interface RequestCenterInitOptions {
   port?: number;
@@ -57,6 +58,7 @@ export class RequestCenter {
           case "registerRequest":
           case "updateRequest":
           case "endRequest":
+          case "sendFile":
             this[_message.type](_message.data);
             break;
           case "responseData":
@@ -107,6 +109,21 @@ export class RequestCenter {
     request.requestEndTime = request.requestEndTime || Date.now();
     // console.log("endRequest", request);
     this.devtool.responseReceived(request);
+  }
+
+  public sendFile(filePath: string) {
+    console.log("sendFile", filePath);
+    if (!fs.existsSync(filePath)) {
+      return;
+    }
+    const file = fs.readFileSync(filePath);
+    this.devtool.send({
+      method: "Page.enable",
+      params: {},
+    });
+    this.devtool.on((error,message)=>{
+      
+    })
   }
 
   public responseRequest(id: string, response: IncomingMessage) {

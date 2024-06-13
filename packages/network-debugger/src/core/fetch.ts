@@ -1,6 +1,7 @@
 import { RequestDetail } from "../common";
 import { headersToObject } from "../utils/map";
 import { MainProcess } from "./fork";
+import { loadStackSource } from "./source";
 
 export function proxyFetch(mainProcess: MainProcess) {
   if (!globalThis.fetch) {
@@ -14,6 +15,7 @@ export function proxyFetch(mainProcess: MainProcess) {
 function fetchProxyFactory(fetchFn: typeof fetch, mainProcess: MainProcess) {
   return function (request: string | URL | Request, options?: RequestInit) {
     const requestDetail = new RequestDetail();
+    loadStackSource(requestDetail);
     requestDetail.requestStartTime = new Date().getTime();
 
     if (typeof request === "string") {
